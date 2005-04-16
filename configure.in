@@ -1,0 +1,26 @@
+AC_INIT(libsmc,0.1,fsateler@users.berlios.de)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(libsmc, 0.1)
+
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+
+#Check for Libraries (glibmm, libxml++ and TagLib)
+PKG_CHECK_MODULES(GLIBMM,glibmm-2.4)
+PKG_CHECK_MODULES(LIBXMLXX,libxml++-2.6)
+AC_CHECK_PROG(TAGLIB,taglib-config,"found")
+#if taglib-config was found, create variables, if not, exit
+if test "$TAGLIB"="found" ; then
+	TAGLIB_CFLAGS=`taglib-config --cflags`
+	TAGLIB_LIBS=`taglib-config --libs`
+else
+	AC_MSG_ERROR([could not find TagLib, install it and then run configure again])
+fi
+
+AC_SUBST(TAGLIB_CFLAGS)
+AC_SUBST(TAGLIB_LIBS)
+
+
+AC_OUTPUT(Makefile src/Makefile)
