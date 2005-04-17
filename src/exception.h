@@ -37,9 +37,10 @@ class Exception{
 public:
 	/** Describes the different possible errors */
 	enum ErrorType{
-		BAD_FILE,	///< A bad file was read.
-		BAD_VERSION,	///< The database version is wronf
-		UNKNOWN		///< Unknown error. Not currently used
+		UNKNOWN,	///< Unknown error. Not currently used
+		BAD_FILE,	///< A bad file was read
+		BAD_VERSION,	///< The database version is wrong
+		BAD_DIR		///< A bad directory was read
 	};
 	
 	/** @brief Constructor
