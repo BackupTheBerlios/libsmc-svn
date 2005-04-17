@@ -20,7 +20,8 @@
 #ifndef SMCFILEINFO_H
 #define SMCFILEINFO_H
 
-#include <glibmm.h>
+
+class Glib::ustring;
 
 namespace smc{
 

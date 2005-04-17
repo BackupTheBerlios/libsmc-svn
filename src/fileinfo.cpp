@@ -21,9 +21,7 @@
 #include <tag.h>
 #include <fileref.h>
 #include <tstring.h>
-#include <iostream>
 #include <sstream>
-#include <stdio.h>
 
 
 using namespace std;
