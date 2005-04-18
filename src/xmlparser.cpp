@@ -19,12 +19,14 @@
  ***************************************************************************/
 #include "xmlparser.h"
 #include "exception.h"
+#include <iostream>
 
 namespace smc {
 
 XmlParser::XmlParser(InfoList* _info)
 	: xmlpp::SaxParser(){
 	mInfo=_info;
+	mVersionOk=false;
 }
 
 
@@ -44,13 +46,17 @@ void XmlParser::on_start_element (const Glib::ustring &name, const AttributeList
 				break;
 			}
 		}
+		// Unsupported version, or no version
+		if( Version!="1.0")	
+			throw Exception(Exception::BAD_VERSION);
+		mVersionOk=true;
 	}
-	else	// No SMCDB tag
-		throw Exception(Exception::BAD_FILE); 
+	else{	
+		if(!mVersionOk)
+			// No SMCDB tag read
+			throw Exception(Exception::BAD_FILE);
+	}
 	
-	// Unsupported version, or no version
-	if( Version!="1.0")	
-		throw Exception(Exception::BAD_VERSION);
 
 	mLastElement=name;
 }
@@ -84,7 +90,7 @@ void XmlParser::on_fatal_error (const Glib::ustring &text){
 }
 
 void XmlParser::on_cdata_block (const Glib::ustring &text){
-
+	
 	if(text=="" || text.empty())
 		return;
 

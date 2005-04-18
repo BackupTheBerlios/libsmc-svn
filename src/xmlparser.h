@@ -36,22 +36,19 @@ public:
 	XmlParser(InfoList*);
 	~XmlParser();
 protected:
-	virtual void on_start_document ();
-	virtual void on_end_document ();
 	virtual void on_start_element (const Glib::ustring &name, const AttributeList &attributes);
 	virtual void on_end_element (const Glib::ustring &name);
-	virtual void on_comment (const Glib::ustring &text);
 	virtual void on_warning (const Glib::ustring &text);
 	virtual void on_error (const Glib::ustring &text);
 	virtual void on_fatal_error (const Glib::ustring &text);
 	virtual void on_cdata_block (const Glib::ustring &text);
-	virtual void on_internal_subset (const Glib::ustring &name, const Glib::ustring &publicId, const Glib::ustring &systemId);
 
 
 private:
 	Glib::ustring mLastElement;
 	InfoList *mInfo;
 	FileInfo temp;
+	bool mVersionOk;
 
 	Glib::ustring mPath;		/// File Path
 	Glib::ustring mSong;		/// Song name
