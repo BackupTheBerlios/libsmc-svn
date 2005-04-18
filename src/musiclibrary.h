@@ -27,7 +27,8 @@ namespace smc {
 /**
  * @brief Manage a media library
  * 
- * This class handles everything concerning a media library. This way you can have one object to represent one collection.
+ * This class handles everything concerning a media library.
+ * This way you can have one object to represent one collection.
  * 
  * @author Felipe Sateler
 */
@@ -45,13 +46,13 @@ public:
 	
 	
 	/** Loads a database file
-	 * \param file The file to be loaded 
+	 * @param file The file to be loaded 
 	*/
 	void Load(const char* file);
 	
 	
 	/** Saves the library to a database file.
-	 * \param file The file to be saved. 
+	 * @param file The file to be saved. 
 	 * If it exists, it's contents will be destroyed
 	*/
 	void Save(const char* file);
@@ -59,28 +60,35 @@ public:
 	
 	/** Scans given directory and stores information about
 	 * files found there.
-	 * \param dir The directory to be scanned
-	 * \param recurse Whether subdirectories should be scanned or not
+	 * @param dir The directory to be scanned.
+	 * @param recurse Whether subdirectories should be scanned or not
 	*/
 	void Scan(const char* dir, const bool recurse=true);
 	
 	
-	/** Get the internal array of information about the files
+	/** Exports a playlist in given format
+	 * @param file The destination file. If it already exists it's contents will be destroyed.
+	 * @param format The format of the playlist. See enum PlaylistFormat for more details.
+	 */
+	void ExportPlaylist(const char* file,const PlaylistFormat format=M3U);
+	
+	
+	/** Get the internal list of information about the files
 	 * @return Returns a reference to the list
 	*/
 	InfoList&	getFiles(void) const;
-	PlaylistFormat	getPlaylistFormat(void) const;
+	
+	
+	///Deletes all elements from the list
+	void Clear();
 	
 	
 protected:
-	///Scans a directory and subdirectories
-	InfoList&	RecurseDirectory(char* dir);
-	///Scans a single directory, and doesn't recurse
-	InfoList&	ScanDirectory(char* dir);
+	///Scans a single directory, doesn't recurse
+	void	ScanDirectory(const char* dir);
 	
 private:
 	InfoList	mFiles;
-	PlaylistFormat	mFormat;
 	
 
 };
