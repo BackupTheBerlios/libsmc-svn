@@ -7,5 +7,5 @@ INCLUDES = $(all_includes)
 
 # the library search path.
 libsmc_la_LDFLAGS = $(all_libraries) @GLIBMM_LIBS@ @LIBXMLXX_LIBS@ @TAGLIB_LIBS@
-AM_CXXFLAGS = -Wall @GLIBMM_CFLAGS@ @LIBXMLXX_CFLAGS@ @TAGLIB_CFLAGS@
+AM_CXXFLAGS = -Wall -g @GLIBMM_CFLAGS@ @LIBXMLXX_CFLAGS@ @TAGLIB_CFLAGS@
 
