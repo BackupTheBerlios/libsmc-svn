@@ -1,2 +1,4 @@
 Make Scan() not rescan files it already knows about
 Finish documenting (Doxygen comments)
+Enable large file structs (dirent64)
+Make Scan() accept extension filters
