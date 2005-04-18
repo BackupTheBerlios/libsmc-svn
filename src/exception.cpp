@@ -37,6 +37,20 @@ Exception::Exception(ErrorType Error,const Glib::ustring& Msg): mMsg(Msg){
 
 	free(Symbols);
 }
+Exception::Exception(ErrorType Error){
+	mError=Error;
+	// With 50 elements we should be able to trace all the stack
+	void * Array[50];
+	int Size = backtrace(Array, 50);
+	char ** Symbols = backtrace_symbols(Array, Size);
+
+	for (int i = 0; i < Size; i++)
+	{
+		mStackTrace.push_back(Symbols[i]);
+	}
+
+	free(Symbols);
+}
 
 
 Exception::~Exception()
@@ -49,6 +63,10 @@ std::vector<Glib::ustring> & Exception::getStackTrace() {
 
 Exception::ErrorType Exception::getType() const{
 	return mError;
+}
+
+Glib::ustring& Exception::getMessage(){
+	return mMsg;
 }
 
 };

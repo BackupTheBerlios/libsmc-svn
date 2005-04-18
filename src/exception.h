@@ -49,12 +49,14 @@ public:
 	 * @param Type The error type. Check enum ErrorType to see possible values
 	 * @param text Additional text the thrower might want to add.
 	 */
-	Exception(ErrorType Type,const Glib::ustring& text="");
-
+	Exception(ErrorType Type,const Glib::ustring& text);
+	Exception(ErrorType Type);
+	
 	~Exception();
 	/** Returns an array of Glib::ustring's containing the symbols got during backtrace */
 	std::vector<Glib::ustring>& getStackTrace() ;
 	ErrorType getType() const;
+	Glib::ustring& getMessage();
 	
 private:
 	ErrorType mError;
