@@ -19,19 +19,24 @@
  ***************************************************************************/
 #include "musiclibrary.h"
 #include "xmlparser.h"
+#include "fileinfo.h"
+#include "exception.h"
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
 #include <libxml++/document.h>
 #include <libxml++/nodes/node.h>
+#include <dirent.h>
 
 namespace smc {
 
-MusicLibrary::MusicLibrary() : mFiles(),mFormat(M3U)
+MusicLibrary::MusicLibrary() : mFiles()
 {
 }
 
-MusicLibrary::MusicLibrary(const MusicLibrary& ref) : mFiles(ref.mFiles),mFormat(ref.mFormat)
+MusicLibrary::MusicLibrary(const MusicLibrary& ref) : mFiles(ref.mFiles)
 {
 }
 
@@ -100,5 +105,101 @@ void MusicLibrary::Load(const char* file){
 	Parser.parse_file(file);
 }
 
+void MusicLibrary::ExportPlaylist( const char * file, const PlaylistFormat format ){
+}
 
-}; //smc
+
+///Removes anything that is not a directory
+static int ScanSelector(const dirent *dir){
+	// Has to be a directory, but not itself or parent
+	if(dir->d_type==DT_DIR){
+		if( (!strcmp(dir->d_name,".") || !strcmp(dir->d_name,"..")) )
+			return 0;
+		else
+			return 1;
+	} 
+	else
+		return 0;
+}
+
+void MusicLibrary::Scan(const char* dir,const bool recurse){
+	if(!recurse)
+		ScanDirectory(dir);
+	else{
+		dirent** Dirs;
+		int count=scandir(dir,&Dirs,ScanSelector,alphasort);
+		
+		if(count<0)
+			throw Exception(Exception::BAD_DIR,dir);
+
+		unsigned StrSize;
+		char Path[4096]; //Names larger than this are unlikely to be found
+		strcpy(Path,dir);
+		StrSize=strlen(dir);
+		for(int i=0;i<count;i++){
+			switch( Dirs[i]->d_type ){
+			// We only want directories to recurse
+			case DT_DIR:
+				strcat(Path+StrSize,"/");
+				strcat(Path+StrSize+1,Dirs[i]->d_name);
+				ScanDirectory(Path);
+				break;
+			}
+		}
+
+	}
+}
+///Removes '.' and '..' entries
+static int ScanDirectorySelector(const dirent *dir){
+	// Is a directory, and either itself or parent (. or ..)
+	if(dir->d_type==DT_DIR && 
+		  (!strcmp(dir->d_name,".") || 
+		  !strcmp(dir->d_name,"..")) )
+		return 0;
+	else
+		return 1;
+}
+
+void MusicLibrary::ScanDirectory(const char* dir){
+	FileInfo Temp;
+	dirent** Files;
+	int count;
+	Glib::ustring Path(dir);
+	
+	
+	count=scandir(dir, &Files, ScanDirectorySelector, alphasort);
+	
+	if(count<0)
+		throw Exception(Exception::BAD_DIR,Path);			
+	
+	for( int i=0; i<count ; i++){
+		switch( Files[i]->d_type ){
+		/*
+			* We only want regular files to parse. Directories aren't recursed, nor symlinks followed
+			*/
+		case DT_REG:
+			// We scan everything for now
+			/*ext=strrchr(files[i]->d_name,'.')+1;	// Finds backwards
+			if(!ext)
+				continue;
+			for(unsigned j=0;j<extensions.size();j++){
+				if(extensions[j]==ext){
+					info.parse((path+"/")+files[i]->d_name);
+					all.push_back(info);
+					break;
+				}
+			}
+			*/
+			Temp.Parse((Path+"/")+Files[i]->d_name);
+			mFiles.push_back(Temp);
+			break;
+		}
+		
+	}
+}
+
+void MusicLibrary::Clear(){
+	mFiles.clear();
+}
+
+};//smc
