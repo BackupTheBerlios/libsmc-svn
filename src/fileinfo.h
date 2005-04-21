@@ -25,7 +25,7 @@
 namespace smc{
 
 /**
- * @Brief Class to manage file meta-data
+ * @brief Manage file meta-data
  * 
  * Manages a single file. It can parse a given file, or can be set by hand.
  * @author Felipe Sateler
@@ -36,6 +36,26 @@ public:
 	FileInfo();
 	///Destructor
 	~FileInfo();
+	
+	/** @brief Element used for comparison
+	 * 
+	 * What element should the '<' and '>' operators use when comparing.
+	 * 
+	 */
+	enum SortCriteria{
+		PATH,
+		TITLE,
+		ARTIST,
+		ALBUM,
+		COMMENT,
+		GENRE,
+		TRACK,
+		LENGTH,
+		BITRATE,
+		SAMPLERATE,
+		CHANNELS,
+		YEAR
+	};
 	
 	// FileInfo interface
 	/** @brief Parse a file
@@ -103,23 +123,27 @@ public:
 	
 	private:
 	// FileInfo variables
-	Glib::ustring path;		// File Path
-	Glib::ustring song;		// Song name
-	Glib::ustring artist;		// Artist name
-	Glib::ustring album;	// Album name
-	Glib::ustring comment;	// NULL if not present
-	Glib::ustring genre;		// NULL if not present
-	int track;		// Track number
-	int bitrate;		// For VBRs it is either the average or nominal bitrate
-	int length;		// In seconds
-	int sample;		// Sample Rate in Hz
-	int channels;	// Number of audio channels
-	unsigned year;	// 0 if no year set
+	Glib::ustring mPath;		// File Path
+	Glib::ustring mTitle;		// Song name
+	Glib::ustring mArtist;		// Artist name
+	Glib::ustring mAlbum;	// Album name
+	Glib::ustring mComment;	// NULL if not present
+	Glib::ustring mGenre;		// NULL if not present
+	int mTrack;		// Track number
+	int mBitrate;		// For VBRs it is either the average or nominal bitrate
+	int mLength;		// In seconds
+	int mSample;		// Sample Rate in Hz
+	int mChannels;	// Number of audio channels
+	unsigned mYear;	// 0 if no year set
+	SortCriteria mCriteria;
 	
 	public:
-	// FileInfo operators
-	///Compares 2 objects, using the path
+	// FileInfo operators (and related)
+	///Compares 2 objects, using SortCriteria
 	bool operator<(const FileInfo& r) const;
+	///Set compare criteria
+	void setSort(const SortCriteria);
+	
 	
 };
 typedef std::vector<FileInfo> InfoVector;

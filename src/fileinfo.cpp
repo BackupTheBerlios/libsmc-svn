@@ -22,6 +22,7 @@
 #include <fileref.h>
 #include <tstring.h>
 #include <sstream>
+#include <assert.h>
 
 
 using namespace std;
@@ -44,66 +45,66 @@ void FileInfo::Parse(Glib::ustring file)
 	TagLib::FileRef ref(file.c_str());
 	
 	if(ref.isNull()){
-		path=file;
-		track=0;
-		year=0;
-		song=" ";
-		artist=" ";
-		album=" ";
-		comment=" ";
-		genre=" ";
+		mPath=file;
+		mTrack=0;
+		mYear=0;
+		mTitle=" ";
+		mArtist=" ";
+		mAlbum=" ";
+		mComment=" ";
+		mGenre=" ";
 	}
 	
 	TagLib::Tag* tag=ref.tag();
 	if(tag){
-		path=file;
-		track=tag->track();
-		year=tag->year();
-		song=tag->title().to8Bit(true);
-		artist=tag->artist().to8Bit(true);
-		album=tag->album().to8Bit(true);
-		comment=tag->comment().to8Bit(true);
-		genre=tag->genre().to8Bit(true);
+		mPath=file;
+		mTrack=tag->track();
+		mYear=tag->year();
+		mTitle=tag->title().to8Bit(true);
+		mArtist=tag->artist().to8Bit(true);
+		mAlbum=tag->album().to8Bit(true);
+		mComment=tag->comment().to8Bit(true);
+		mGenre=tag->genre().to8Bit(true);
 	}
 	else {
-		path=file;
-		track=0;
-		year=0;
-		song=" ";
-		artist=" ";
-		album=" ";
-		comment=" ";
-		genre=" ";
+		mPath=file;
+		mTrack=0;
+		mYear=0;
+		mTitle=" ";
+		mArtist=" ";
+		mAlbum=" ";
+		mComment=" ";
+		mGenre=" ";
 	}
 	
 	
 	TagLib::AudioProperties* ap=ref.audioProperties();
 	if(ap){
-		length=ap->length();
-		bitrate=ap->bitrate();
-		sample=ap->sampleRate();
-		channels=ap->channels();
+		mLength=ap->length();
+		mBitrate=ap->bitrate();
+		mSample=ap->sampleRate();
+		mChannels=ap->channels();
 	}
 	else
-		length=bitrate=sample=channels=0;
+		mLength=mBitrate=mSample=mChannels=0;
 }
 
 void FileInfo::set(const Glib::ustring& _path,const Glib::ustring& _title,const Glib::ustring& _artist,
 	const Glib::ustring& _album,const Glib::ustring& _comment,const Glib::ustring& _genre,
 	const int _track,const int _length, const int _bitrate,const int _samplerate,
 	const int _channels,const unsigned _year){
-	path=_path;
-	song=_title;
-	artist=_artist;
-	album=_album;
-	comment=_comment;
-	genre=_genre;
-	track=_track;
-	length=_length;
-	bitrate=_bitrate;
-	sample=_samplerate;
-	channels=_channels;
-	year=_year;
+	mPath=_path;
+	mTitle=_title;
+	mArtist=_artist;
+	mAlbum=_album;
+	mComment=_comment;
+	mGenre=_genre;
+	mTrack=_track;
+	mLength=_length;
+	mBitrate=_bitrate;
+	mSample=_samplerate;
+	mChannels=_channels;
+	mYear=_year;
 }
 
 
@@ -119,43 +120,43 @@ Glib::ustring FileInfo::getInfo(const char* fmt) const{
 			i++;
 			switch( fmt[i] ){
 			case 'p':
-				result<<artist;
+				result<<mArtist;
 				break;
 			case 't':
-				result<<song;
+				result<<mTitle;
 				break;
 			case 'a':
-				result<<album;
+				result<<mAlbum;
 				break;
 			case 'f':
-				result<<path;
+				result<<mPath;
 				break;
 			case 'n':
-				result<<track;
+				result<<mTrack;
 				break;
 			case '%':
 				result<<'%';
 				break;
 			case 'l':
-				result<<length;
+				result<<mLength;
 				break;
 			case 'c':
-				result<<channels;
+				result<<mChannels;
 				break;
 			case 'g':
-				result<<genre;
+				result<<mGenre;
 				break;
 			case 's':
-				result<<sample;
+				result<<mSample;
 				break;
 			case 'i':
-				result<<comment;
+				result<<mComment;
 				break;
 			case 'b':
-				result<<bitrate;
+				result<<mBitrate;
 				break;
 			case 'y':
-				result<<year;
+				result<<mYear;
 				break;
 			//default:
 				// Just ignore it
@@ -169,55 +170,99 @@ Glib::ustring FileInfo::getInfo(const char* fmt) const{
 }
 
 bool FileInfo::operator <(const FileInfo& r) const{
-	return path<r.path;
+	assert(mCriteria>=PATH && mCriteria<=YEAR);
+	bool result=false;
+	switch(mCriteria){
+	case PATH:
+		result=mPath<r.mPath;
+		break;
+	case TITLE:
+		result=mTitle<r.mTitle;
+		break;
+	case ARTIST:
+		result=mArtist<r.mArtist;
+		break;
+	case ALBUM:
+		result=mAlbum<r.mAlbum;
+		break;
+	case COMMENT:
+		result=mComment<r.mComment;
+		break;
+	case GENRE:
+		result=mGenre<r.mGenre;
+		break;
+	case TRACK:
+		result=mTrack<r.mTrack;
+		break;
+	case LENGTH:
+		result=mLength<r.mLength;
+		break;
+	case BITRATE:
+		result=mBitrate<r.mBitrate;
+		break;
+	case SAMPLERATE:
+		result=mSample<r.mSample;
+		break;
+	case CHANNELS:
+		result=mChannels<r.mChannels;
+		break;
+	case YEAR:
+		result=mYear<r.mYear;
+		break;
+	}
+	return result;
 }
 
 Glib::ustring FileInfo::getPath() const{
-	return path;
+	return mPath;
 }
 
 Glib::ustring FileInfo::getTitle() const{
-	return song;
+	return mTitle;
 }
 
 Glib::ustring FileInfo::getArtist() const{
-	return artist;
+	return mArtist;
 }
 
 Glib::ustring FileInfo::getAlbum() const{
-	return album;
+	return mAlbum;
 }
 
 Glib::ustring FileInfo::getComment() const{
-	return comment;
+	return mComment;
 }
 
 Glib::ustring FileInfo::getGenre() const{
-	return genre;
+	return mGenre;
 }
 
 int FileInfo::getTrack() const{
-	return track;
+	return mTrack;
 }
 
 int FileInfo::getLength() const{
-	return length;
+	return mLength;
 }
 
 int FileInfo::getBitrate() const{
-	return bitrate;
+	return mBitrate;
 }
 
 int FileInfo::getSampleRate() const{
-	return sample;
+	return mSample;
 }
 
 int FileInfo::getChannels() const{
-	return channels;
+	return mChannels;
 }
 
 unsigned FileInfo::getYear() const{
-	return year;
+	return mYear;
 }
+
+void smc::FileInfo::setSort(const SortCriteria criteria){
+	mCriteria=criteria;
+} 
 
 } //smc
