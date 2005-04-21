@@ -25,10 +25,11 @@
 
 namespace smc {
 
-/**
+/** @brief Exception thrown by libsmc
+ * 
  * Exception handling for the SMC library. If the library throws this,
- * then it couldn't (or it shouldn't) handle the error
- * At the moment, it sucks. It will build a stack trace 
+ * then it couldn't (or it shouldn't) handle the error.
+ * It will build a stack trace 
  * to aid the developer in finding were the error is.
  * 
  * @author Felipe Sateler
@@ -50,12 +51,15 @@ public:
 	 * @param text Additional text the thrower might want to add.
 	 */
 	Exception(ErrorType Type,const Glib::ustring& text);
+	/// @overload
 	Exception(ErrorType Type);
 	
 	~Exception();
 	/** Returns an array of Glib::ustring's containing the symbols got during backtrace */
-	std::vector<Glib::ustring>& getStackTrace() ;
+	std::vector<Glib::ustring>& getStackTrace();
+	///Returns the type of error thrown (See ErrorType for more details)
 	ErrorType getType() const;
+	///Returns the message that the thrower added to the exception.
 	Glib::ustring& getMessage();
 	
 private:
