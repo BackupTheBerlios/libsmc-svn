@@ -26,7 +26,8 @@
 
 namespace smc {
 
-/**
+/** @brief SAX parser
+ * 
  * SAX XML parser for loading the database file into memory. Read the libXML++ documentation for details.
  * @author Felipe Sateler
 */

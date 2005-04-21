@@ -29,6 +29,9 @@ namespace smc {
  * 
  * This class handles everything concerning a media library.
  * This way you can have one object to represent one collection.
+ * @todo Scan() actually re-scans everything. It should scan only new elements
+ * @todo Scan() should accept filename patterns
+ * @todo Implement ExportPlaylist()
  * 
  * @author Felipe Sateler
 */
