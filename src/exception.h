@@ -41,7 +41,8 @@ public:
 		UNKNOWN,	///< Unknown error. Not currently used
 		BAD_FILE,	///< A bad file was read
 		BAD_VERSION,	///< The database version is wrong
-		BAD_DIR		///< A bad directory was read
+		BAD_DIR,	///< A bad directory was read
+		BAD_PATH	///< Received a relative path instead of an absolute one, or viceversa. This one is an internal error.
 	};
 	
 	/** @brief Constructor
