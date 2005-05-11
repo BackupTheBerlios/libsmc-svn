@@ -1,3 +1,4 @@
 Make Scan() not rescan files it already knows about
 Finish documenting (Doxygen comments)
 Make Scan() accept extension filters
+Add playlist exporting
