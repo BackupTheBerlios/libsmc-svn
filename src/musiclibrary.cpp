@@ -29,6 +29,9 @@
 #include <libxml++/document.h>
 #include <libxml++/nodes/node.h>
 #include <dirent.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 namespace smc {
 
@@ -106,6 +109,15 @@ void MusicLibrary::Load(const char* file){
 }
 
 void MusicLibrary::ExportPlaylist( const char * file, const PlaylistFormat format ){
+	
+	switch( format ){
+	case M3U:
+		int size=mFiles.size();
+		for( int i=0;i<size ;i++ ){
+			
+		}
+		break;
+	}
 }
 
 
@@ -201,5 +213,56 @@ void MusicLibrary::ScanDirectory(const char* dir){
 void MusicLibrary::Clear(){
 	mFiles.clear();
 }
+
+
+
+Glib::ustring MusicLibrary::Abs2Rel(const Glib::ustring path,const Glib::ustring _base){
+	
+	// We can't handle non absolute paths
+	if( path[0]!='/' || _base[0]!='/')
+		throw new Exception(BAD_PATH);
+
+	Glib::ustring base(_base);
+
+	if(base[base.length()-1]!='/')
+		base+='/';
+	
+	// First we see what parts we have in common
+	int i;
+	for(i=0;i<base.length();i++){
+		if( base[i]!=path[i] )
+			break;
+	}
+
+	if(i==base.length())
+		return path.substr(i);
+
+	// Now we scroll back until we find a '/'
+	i=base.rfind('/',i);
+	
+	
+	// Now we construct the path
+	// What we do eliminate i characters from path
+	// and then we add as many '..' as necessary
+	Glib::ustring result=path.substr(i+1);
+	while( (i=base.find('/',i+1))!=string::npos ){
+		result="../"+result;
+	}
+	
+	return result;
+	
+}
+
+Glib::ustring&  MusicLibrary::Rel2Abs(const Glib::ustring path,const Glib::ustring base){
+	// Too lazy to think of a more "correct" algorithm
+	if( path[0]=='/' || base[0]!='/' )
+		throw new Exception(BAD_PATH);
+	
+	if(base[base.length()-1]=='/')
+		return base+path;
+	else
+		return base+'/'+path;
+}
+
 
 };//smc
