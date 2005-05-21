@@ -39,6 +39,22 @@ class MusicLibrary{
 public:
 	enum PlaylistFormat {M3U,PLS};
 	
+	///Converts from absolute to relative paths
+	/**
+	 * @param path absolute path
+	 * @param base base directory (must be absolute path)
+	 * @return resulting relative path
+	 */
+	static Glib::ustring Abs2Rel(const Glib::ustring& path,const Glib::ustring& base);
+	///Converts from relative to absolute paths
+	/**
+	 * @param path relative path
+	 * @param base base directory (must be absolute path)
+	 * @return resulting absolute path
+	 */
+	static Glib::ustring Rel2Abs(Glib::ustring& path,Glib::ustring& base);
+	
+	
 	///Constructor
 	MusicLibrary();
 	///Copy Constructor
@@ -89,29 +105,9 @@ public:
 protected:
 	///Scans a single directory, doesn't recurse
 	void ScanDirectory(const char* dir);
-	
-	/*
-	 * The following functions are adaptations from Tamacom's PathConverter package,
-	 * at http://tamacom.com/pathconvert.html
-	 */
-	
-	///Converts from absolute to relative paths
-	/**
-	 * @param path absolute path
-	 * @param base base directory (must be absolute path)
-	 * @return resulting relative path
-	 */
-	Glib::ustring Abs2Rel(const Glib::ustring& path,const Glib::ustring& base);
-	///Converts from relative to absolute paths
-	/**
-	 * @param path relative path
-	 * @param base base directory (must be absolute path)
-	 * @return resulting absolute path
-	 */
-	Glib::ustring Rel2Abs(Glib::ustring& path,Glib::ustring& base);
+
 private:
 	InfoList	mFiles;
-	
 
 };
 
