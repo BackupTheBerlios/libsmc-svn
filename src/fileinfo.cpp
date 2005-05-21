@@ -18,11 +18,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "fileinfo.h"
+#include "exception.h"
+#include "musiclibrary.h"
 #include <tag.h>
 #include <fileref.h>
 #include <tstring.h>
 #include <sstream>
 #include <assert.h>
+#include <glibmm/ustring.h>
 
 
 using namespace std;
@@ -42,10 +45,20 @@ FileInfo::~FileInfo()
 
 void FileInfo::Parse(Glib::ustring file)
 {
+	// File doesn't exist
+	if(!access(file.c_str(),F_OK))
+		throw new Exception(Exception::BAD_FILE,file);
+	
 	TagLib::FileRef ref(file.c_str());
 	
+	//Get current working directory
+	char* wd=getcwd(NULL,-1);
+	Glib::ustring cwd(wd);
+	free(wd);
+	
 	if(ref.isNull()){
-		mPath=file;
+		
+		mPath=MusicLibrary::Rel2Abs(file,cwd);
 		mTrack=0;
 		mYear=0;
 		mTitle=" ";
@@ -57,7 +70,7 @@ void FileInfo::Parse(Glib::ustring file)
 	
 	TagLib::Tag* tag=ref.tag();
 	if(tag){
-		mPath=file;
+		mPath=MusicLibrary::Rel2Abs(file,cwd);
 		mTrack=tag->track();
 		mYear=tag->year();
 		mTitle=tag->title().to8Bit(true);
