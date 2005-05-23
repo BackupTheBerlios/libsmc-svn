@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
 
 namespace smc {
 
@@ -109,15 +110,24 @@ void MusicLibrary::Load(const char* file){
 }
 
 void MusicLibrary::ExportPlaylist( const char * file, const PlaylistFormat format ){
+
+	std::ofstream out(file);
+	
+	out<<"#EXTM3U\n";
+	InfoList::iterator it,end;
 	
 	switch( format ){
 	case M3U:
-		int size=mFiles.size();
-		for( int i=0;i<size ;i++ ){
-			
+		for( it=mFiles.begin(),mFiles.end() ; it!=end ; it++ ){
+			out<<(*it).getInfo("#EXTINF:%l,%p - %t\n");
+			out<<(*it).getPath()<<"\n";
 		}
 		break;
+	case PLS:
+		break;
 	}
+	
+	out.close();
 }
 
 
@@ -216,11 +226,11 @@ void MusicLibrary::Clear(){
 
 
 
-Glib::ustring MusicLibrary::Abs2Rel(const Glib::ustring path,const Glib::ustring _base){
+Glib::ustring MusicLibrary::Abs2Rel(const Glib::ustring& path,const Glib::ustring& _base){
 	
 	// We can't handle non absolute paths
 	if( path[0]!='/' || _base[0]!='/')
-		throw new Exception(BAD_PATH);
+		throw new Exception(Exception::BAD_PATH);
 
 	Glib::ustring base(_base);
 
@@ -228,7 +238,7 @@ Glib::ustring MusicLibrary::Abs2Rel(const Glib::ustring path,const Glib::ustring
 		base+='/';
 	
 	// First we see what parts we have in common
-	int i;
+	unsigned i;
 	for(i=0;i<base.length();i++){
 		if( base[i]!=path[i] )
 			break;
@@ -245,7 +255,7 @@ Glib::ustring MusicLibrary::Abs2Rel(const Glib::ustring path,const Glib::ustring
 	// What we do eliminate i characters from path
 	// and then we add as many '..' as necessary
 	Glib::ustring result=path.substr(i+1);
-	while( (i=base.find('/',i+1))!=string::npos ){
+	while( (i=base.find('/',i+1))!=std::string::npos ){
 		result="../"+result;
 	}
 	
@@ -253,10 +263,14 @@ Glib::ustring MusicLibrary::Abs2Rel(const Glib::ustring path,const Glib::ustring
 	
 }
 
-Glib::ustring&  MusicLibrary::Rel2Abs(const Glib::ustring path,const Glib::ustring base){
+Glib::ustring  MusicLibrary::Rel2Abs(const Glib::ustring& path,const Glib::ustring& base){
 	// Too lazy to think of a more "correct" algorithm
-	if( path[0]=='/' || base[0]!='/' )
-		throw new Exception(BAD_PATH);
+	
+	// Already an absolute path
+	if( path[0]=='/' )
+		return path;
+	if( base[0]!='/' )
+		throw new Exception(Exception::BAD_PATH);
 	
 	if(base[base.length()-1]=='/')
 		return base+path;

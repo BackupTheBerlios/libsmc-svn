@@ -52,7 +52,7 @@ public:
 	 * @param base base directory (must be absolute path)
 	 * @return resulting absolute path
 	 */
-	static Glib::ustring Rel2Abs(Glib::ustring& path,Glib::ustring& base);
+	static Glib::ustring Rel2Abs(const Glib::ustring& path, const Glib::ustring& base);
 	
 	
 	///Constructor

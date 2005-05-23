@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Felipe Sateler                                  *
- *   fsatelerp@hotmail.com                                                 *
+ *   fsateler@gmail.com                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -80,7 +80,7 @@ void FileInfo::Parse(Glib::ustring file)
 		mGenre=tag->genre().to8Bit(true);
 	}
 	else {
-		mPath=file;
+		mPath=MusicLibrary::Rel2Abs(file,cwd);
 		mTrack=0;
 		mYear=0;
 		mTitle=" ";
